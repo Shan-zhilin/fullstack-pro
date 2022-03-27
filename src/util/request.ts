@@ -1,14 +1,14 @@
-import AjaxPlugin from 'axios';
+import axios from 'axios';
 
 const HOST_URL = location.protocol + '//' + location.host + '/api';
 
 const request = (
-	url,
+	url: string | string[],
 	{
 		method,
 		data = {},
 		response = 'json' //文件传输需要替换格式
-	}
+	}: { method: string; data: any; response?:any}
 ) => {
 	return new Promise((resolve, reject) => {
 		url = HOST_URL + url;
@@ -27,18 +27,18 @@ const request = (
 				}
 			}
 		}
-		let ajaxResult;
+		let result;
 		if (method === 'get') {
-			ajaxResult = AjaxPlugin.get(url, { responseType: response });
+			result = axios.get(url, { responseType: response });
 		} else if (method === 'delete') {
-			ajaxResult = AjaxPlugin.delete(url);
+			result = axios.delete(url);
 		} else if (method === 'post') {
-			ajaxResult = AjaxPlugin.post(url, data);
+			result = axios.post(url, data);
 		} else if (method === 'put') {
-			ajaxResult = AjaxPlugin.put(url, data);
+			result = axios.put(url, data);
 		}
 
-		ajaxResult.then(
+		result?.then(
 			r => {
 				resolve(r.data);
 			},
