@@ -4,5 +4,7 @@ declare global {
   const ElButton: typeof import('element-plus/es')['ElButton']
   const ElDialog: typeof import('element-plus/es')['ElDialog']
   const ElInput: typeof import('element-plus/es')['ElInput']
+  const ElRadio: typeof import('element-plus/es')['ElRadio']
+  const ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
 }
 export {}
