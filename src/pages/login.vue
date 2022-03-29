@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 15:12:27
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-03-28 23:32:28
+ * @LastEditTime: 2022-03-29 15:33:01
 -->
 <template>
   <div class="content">
@@ -29,7 +29,7 @@
 <script lang="ts">
 import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import { userLogin, userRegister, updateUserInfo } from '../api/user';
+import { userLogin } from '../api/user';
 
 export default {
 	setup(props: any) {
@@ -55,6 +55,9 @@ export default {
 						message: '登录成功',
 						type: 'success'
 					});
+					if (res.jwt_token) {
+						window.localStorage.setItem('tokent',res.jwt_token)
+					}
 				} else {
 					ElMessage({
 						message: res.message,
