@@ -2,95 +2,111 @@
  * @Author: shanzhilin
  * @Date: 2022-03-29 16:43:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-03-29 22:36:54
+ * @LastEditTime: 2022-03-31 23:03:56
 -->
 <template>
   <div class="content">
     <el-menu class="el-menu-vertical-demo"
              default-active="1">
       <h2>疫情管理系统</h2>
-      <el-menu-item index="1" @click="routetHop({address:'/home'})">
+      <el-menu-item index="1"
+                    @click="routetHop({address:'/home'})">
         <el-icon>
           <house />
         </el-icon>
         <span>首页</span>
       </el-menu-item>
+      <div v-show="userInfo.type === 1">
+        <el-menu-item index="2"
+                      @click="routetHop({address:'/student/home'})">
+          <el-icon>
+            <user />
+          </el-icon>
+          <span>学生管理</span>
+        </el-menu-item>
+        <el-menu-item index="3">
+          <el-icon>
+            <avatar />
+          </el-icon>
+          <span>教师管理</span>
+        </el-menu-item>
+        <el-menu-item index="4">
+          <el-icon>
+            <bell />
+          </el-icon>
+          <span>通知管理</span>
+        </el-menu-item>
+        <el-menu-item index="5">
+          <el-icon>
+            <circle-plus />
+          </el-icon>
+          <span>添加班级</span>
+        </el-menu-item>
+      </div>
 
-      <el-menu-item index="2"
-                    @click="routetHop({address:'/student/home'})">
-        <el-icon>
-          <user />
-        </el-icon>
-        <span>学生管理</span>
-      </el-menu-item>
-      <el-menu-item index="3">
-        <el-icon>
-          <avatar />
-        </el-icon>
-        <span>教师管理</span>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <el-icon>
-          <bell />
-        </el-icon>
-        <span>通知管理</span>
-      </el-menu-item>
-      <el-menu-item index="5">
-        <el-icon>
-          <circle-plus />
-        </el-icon>
-        <span>添加班级</span>
-      </el-menu-item>
+      <div v-show="userInfo.type === 2">
+        <el-menu-item index="6">
+          <el-icon>
+            <bell />
+          </el-icon>
+          <span>我的通知</span>
+        </el-menu-item>
+        <el-menu-item index="7">
+          <el-icon>
+            <document />
+          </el-icon>
+          <span>健康填报</span>
+        </el-menu-item>
+        <el-menu-item index="8">
+          <el-icon>
+            <chat-line-square />
+          </el-icon>
+          <span>请假申请</span>
+        </el-menu-item>
+        <el-menu-item index="9">
+          <el-icon>
+            <message />
+          </el-icon>
+          <span>个人信息</span>
+        </el-menu-item>
+      </div>
 
-      <el-menu-item index="6">
-        <el-icon>
-          <bell />
-        </el-icon>
-        <span>我的通知</span>
-      </el-menu-item>
-      <el-menu-item index="7">
-        <el-icon>
-          <document />
-        </el-icon>
-        <span>健康填报</span>
-      </el-menu-item>
-      <el-menu-item index="8">
-        <el-icon>
-          <chat-line-square />
-        </el-icon>
-        <span>请假申请</span>
-      </el-menu-item>
-      <el-menu-item index="9">
-        <el-icon>
-          <message />
-        </el-icon>
-        <span>个人信息</span>
-      </el-menu-item>
-
-      <el-menu-item index="10">
-        <el-icon>
-          <alarm-clock />
-        </el-icon>
-        <span>通知管理</span>
-      </el-menu-item>
-      <el-menu-item index="11">
-        <el-icon>
-          <chat-dot-square />
-        </el-icon>
-        <span>请假管理</span>
-      </el-menu-item>
-      <el-menu-item index="12">
-        <el-icon>
-          <alarm-clock />
-        </el-icon>
-        <span>个人信息</span>
-      </el-menu-item>
+      <div v-show="userInfo.type === 3">
+        <el-menu-item index="10">
+          <el-icon>
+            <alarm-clock />
+          </el-icon>
+          <span>通知管理</span>
+        </el-menu-item>
+        <el-menu-item index="11">
+          <el-icon>
+            <chat-dot-square />
+          </el-icon>
+          <span>请假管理</span>
+        </el-menu-item>
+        <el-menu-item index="12"
+                      route="">
+          <el-icon>
+            <alarm-clock />
+          </el-icon>
+          <span>个人信息</span>
+        </el-menu-item>
+      </div>
 
     </el-menu>
 
     <div class="rightBody">
       <nav>
-        <div>1</div>
+        <el-button type="text"
+                   @click="routetHop({
+          address:'/home'
+        })">HOME</el-button>
+        <div class="setting">
+          <span>您好！</span>
+          <span>{{userInfo.username}}&nbsp;&nbsp;</span>
+          <el-button type="text"
+                     @click="quit">退出登录</el-button>
+        </div>
       </nav>
       <div class="rightContent">
         <router-view></router-view>
@@ -112,8 +128,10 @@ import {
 	AlarmClock,
 	ChatDotSquare
 } from '@element-plus/icons-vue';
-import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { getUserDataByToken } from '../api/user';
+import { ElMessage } from 'element-plus/lib/components';
 
 export default {
 	components: {
@@ -130,13 +148,42 @@ export default {
 	},
 	setup() {
 		const router = useRouter();
+		const userInfo = reactive({
+			username: '',
+			type: 1 //1 管理员,2 学生,3 老师
+		});
 
 		// 路由跳转方法
 		const routetHop = ({ address }: { address: string; [key: string]: any }) => {
 			router.push(address);
 		};
+
+    // 退出方法
+    const quit = () => {
+      router.push('/')
+      window.localStorage.removeItem('token')
+    }
+
+		// 获取验证信息
+		getUserDataByToken({
+			token: window.localStorage.getItem('token')
+		}).then((res: any) => {
+			if (res.success) {
+				const { username, type } = res.value;
+				userInfo.username = username;
+				userInfo.type = type;
+			} else {
+				ElMessage.error({
+					message: '验证过期请重新登录'
+				});
+				router.push('/login');
+			}
+		});
+
 		return {
-			routetHop
+			routetHop,
+			userInfo,
+      quit
 		};
 	}
 };
@@ -153,6 +200,13 @@ export default {
 		overflow: auto;
 		background-color: rgb(45, 58, 75);
 	}
+	.example-showcase .el-dropdown-link {
+		cursor: pointer;
+		color: var(--el-color-primary);
+		display: flex;
+		align-items: center;
+	}
+
 	h2 {
 		color: white;
 		text-align: center;
@@ -174,9 +228,17 @@ export default {
 	.rightBody {
 		flex: 1;
 		nav {
-			display: block;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
 			height: 50px;
+			padding: 0 20px;
 			border-bottom: 1px solid rgb(222, 226, 230);
+
+			.setting {
+				display: flex;
+				align-items: center;
+			}
 		}
 
 		.rightContent {

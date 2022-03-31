@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 15:12:27
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-03-29 15:33:01
+ * @LastEditTime: 2022-03-31 16:25:21
 -->
 <template>
   <div class="content">
@@ -30,6 +30,7 @@
 import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { userLogin } from '../api/user';
+import {useRouter} from 'vue-router'
 
 export default {
 	setup(props: any) {
@@ -39,6 +40,8 @@ export default {
 			password: '',
 			type:1
 		});
+		
+		const router = useRouter()
 
 		// 登录方法
 		const login = () => {
@@ -56,8 +59,9 @@ export default {
 						type: 'success'
 					});
 					if (res.jwt_token) {
-						window.localStorage.setItem('tokent',res.jwt_token)
+						window.localStorage.setItem('token',res.jwt_token)
 					}
+					router.push('/home')
 				} else {
 					ElMessage({
 						message: res.message,

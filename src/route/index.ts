@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 14:44:43
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-03-29 22:33:20
+ * @LastEditTime: 2022-03-31 16:11:21
  */
 import { createRouter, createWebHashHistory } from 'vue-router';
 const login = () => import('../pages/Login.vue');
@@ -15,7 +15,7 @@ const routes = [
 	{
 		path: '/home',
 		component: home,
-        redirect: '/home/board',
+        redirect: '/home/board', //默认重定向到/home/board
 		children: [
 			{ path: '/home/board', component: board },
 			{ path: '/student/home', component: studentHome }
