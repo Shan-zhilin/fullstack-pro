@@ -97,13 +97,11 @@
 
     <div class="rightBody">
       <nav>
-        <el-button type="text"
-                   @click="routetHop({
-          address:'/home'
-        })">HOME</el-button>
-        <div class="setting">
+        <div>
           <span>您好！</span>
           <span>{{userInfo.username}}&nbsp;&nbsp;</span>
+        </div>
+        <div class="setting">
           <el-button type="text"
                      @click="quit">退出登录</el-button>
         </div>
@@ -158,11 +156,11 @@ export default {
 			router.push(address);
 		};
 
-    // 退出方法
-    const quit = () => {
-      router.push('/')
-      window.localStorage.removeItem('token')
-    }
+		// 退出方法
+		const quit = () => {
+			router.push('/');
+			window.localStorage.removeItem('token');
+		};
 
 		// 获取验证信息
 		getUserDataByToken({
@@ -183,7 +181,7 @@ export default {
 		return {
 			routetHop,
 			userInfo,
-      quit
+			quit
 		};
 	}
 };
