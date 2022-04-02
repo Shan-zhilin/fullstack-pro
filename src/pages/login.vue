@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 15:12:27
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-03-31 16:25:21
+ * @LastEditTime: 2022-04-01 17:07:44
 -->
 <template>
   <div class="content">
@@ -16,12 +16,19 @@
                 type="password"
                 v-model="loginData.password" />
       <div class="redio">
-        <el-radio v-model="loginData.type" :label="1" border>管理员</el-radio>
-        <el-radio v-model="loginData.type" :label="2" border>学生</el-radio>
-        <el-radio v-model="loginData.type" :label="3" border>教师</el-radio>
+        <el-radio v-model="loginData.type"
+                  :label="1"
+                  border>管理员</el-radio>
+        <el-radio v-model="loginData.type"
+                  :label="2"
+                  border>学生</el-radio>
+        <el-radio v-model="loginData.type"
+                  :label="3"
+                  border>教师</el-radio>
       </div>
       <el-button type="primary"
-                 @click="login" size="large">登录</el-button>
+                 @click="login"
+                 size="large">登录</el-button>
     </div>
 
   </div>
@@ -30,7 +37,7 @@
 import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { userLogin } from '../api/user';
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router';
 
 export default {
 	setup(props: any) {
@@ -38,10 +45,10 @@ export default {
 		const loginData = reactive({
 			username: '',
 			password: '',
-			type:1
+			type: 1
 		});
-		
-		const router = useRouter()
+
+		const router = useRouter();
 
 		// 登录方法
 		const login = () => {
@@ -59,9 +66,11 @@ export default {
 						type: 'success'
 					});
 					if (res.jwt_token) {
-						window.localStorage.setItem('token',res.jwt_token)
+						window.localStorage.setItem('token', res.jwt_token);
 					}
-					router.push('/home')
+					router.push({
+						path: '/home'
+					});
 				} else {
 					ElMessage({
 						message: res.message,
@@ -93,7 +102,7 @@ export default {
 		margin-top: 0;
 		margin-bottom: 40px;
 	}
-	.el-input{
+	.el-input {
 		margin-bottom: 20px;
 	}
 	.el-button {

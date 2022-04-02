@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-29 16:43:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-03-31 23:03:56
+ * @LastEditTime: 2022-04-01 20:08:12
 -->
 <template>
   <div class="content">
@@ -10,7 +10,7 @@
              default-active="1">
       <h2>疫情管理系统</h2>
       <el-menu-item index="1"
-                    @click="routetHop({address:'/home'})">
+                    @click="routetHop({path:'/home'})">
         <el-icon>
           <house />
         </el-icon>
@@ -18,13 +18,14 @@
       </el-menu-item>
       <div v-show="userInfo.type === 1">
         <el-menu-item index="2"
-                      @click="routetHop({address:'/student/home'})">
+                      @click="routetHop({path:'/student/home'})">
           <el-icon>
             <user />
           </el-icon>
           <span>学生管理</span>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="3"
+                      @click="routetHop({path:'/teacher/home'})">
           <el-icon>
             <avatar />
           </el-icon>
@@ -146,14 +147,18 @@ export default {
 	},
 	setup() {
 		const router = useRouter();
+
 		const userInfo = reactive({
 			username: '',
 			type: 1 //1 管理员,2 学生,3 老师
 		});
 
 		// 路由跳转方法
-		const routetHop = ({ address }: { address: string; [key: string]: any }) => {
-			router.push(address);
+		const routetHop = (arg: any) => {
+			const { path } = arg;
+			router.push({
+				path
+			});
 		};
 
 		// 退出方法

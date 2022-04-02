@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 15:03:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-03-31 16:22:31
+ * @LastEditTime: 2022-04-02 19:56:11
  */
 import request from '../util/request';
 
@@ -17,6 +17,14 @@ export async function userLogin(data: any) {
 // 根据token登录token获取用户信息
 export async function getUserDataByToken(data:any) {
 	return await request('/users/getUserDataByToken',{
+		method: 'get',
+		data
+	})
+}
+
+// 获取学生 或 教师的列表信息
+export async function getUsersByTypePage(data:any) {
+	return await request('/users/getUsersByTypePage',{
 		method: 'get',
 		data
 	})
