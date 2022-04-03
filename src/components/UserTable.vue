@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-02 21:41:41
+ * @LastEditTime: 2022-04-04 00:14:55
 -->
 <template>
   <div>
@@ -34,7 +34,7 @@
 
     <el-card class="card">
       <el-table style="width: 100%"
-                max-height="500"
+                max-height="450"
                 :data="tableData">
         <el-table-column fixed
                          prop="id"
@@ -49,7 +49,14 @@
                          label="班级" />
         <el-table-column prop="type"
                          label="类型" />
-        <el-table-column label="操作" />
+        <el-table-column label="操作"
+                         fixed="right">
+          <template #default="scope">
+            <el-button @click="openDialog(scope.row)">修改</el-button>
+            <el-button type="danger"
+                       @click="deleteUserOption(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>>
 
       </el-table>
       <el-pagination :currentPage="currentPage"
@@ -61,23 +68,93 @@
                      @current-change="handleCurrentChange" />
     </el-card>
 
+    <el-dialog v-model="updateDialog"
+               width="500px"
+               title="用户信息修改"
+               @close="closeDialog">
+      <el-form :model="updateUserInfo"
+               label-width="auto"
+               :label-position="labelPosition"
+               :size="size">
+        <el-form-item label="ID">
+          <el-input v-model="updateUserInfo.id"
+                    readonly />
+        </el-form-item>
+        <el-form-item label="用户名">
+          <el-input v-model="updateUserInfo.username" />
+        </el-form-item>
+        <el-form-item label="地址">
+          <el-input v-model="updateUserInfo.address" />
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-radio v-model="updateUserInfo.sex"
+                    :label="1">男</el-radio>
+          <el-radio v-model="updateUserInfo.sex"
+                    :label="0">女</el-radio>
+        </el-form-item>
+        <el-form-item label="类型">
+          <el-radio v-model="updateUserInfo.type"
+                    :label="1"
+                    border
+                    size="large">管理员</el-radio>
+          <el-radio v-model="updateUserInfo.type"
+                    :label="2"
+                    border
+                    size="large">学生</el-radio>
+          <el-radio v-model="updateUserInfo.type"
+                    :label="3"
+                    border
+                    size="large">教师</el-radio>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="large"
+                     @click="closeDialog">取消</el-button>
+          <el-button type="primary"
+                     size="large"
+                     @click="updateInfo">提交</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { reactive, ref, toRefs, onMounted } from 'vue';
 import { Search, UploadFilled } from '@element-plus/icons-vue';
-import { getUsersByTypePage } from '@/api/user';
+import { getUsersByTypePage, deleteUser, updateUserInfo } from '@/api/user';
+import { ElMessage } from 'element-plus';
 interface dataProps {
 	id: string;
-	address: string;
-	classes: string;
-	createtime: string;
-	modifytime: string;
-	password: string;
-	sex: string;
+	username?: string;
+	address?: string;
+	classes?: string;
+	createtime?: string;
+	modifytime?: string;
+	password?: string;
+	sex: string | number;
 	type: number | string;
-	mailbox: any;
+	mailbox?: any;
+}
+interface stateProps {
+	tableData: dataProps[];
+	selectValue: string;
+	inputValue: string;
+	totalNum: number;
+	pageSize: number;
+	currentPage: number;
+	updateDialog: boolean;
+	updateUserInfo: dataProps;
+}
+
+enum Sex {
+	'女',
+	'男'
+}
+
+enum UserType {
+	'管理员' = 1,
+	'学生',
+	'老师'
 }
 
 export default {
@@ -85,13 +162,21 @@ export default {
 	props: ['type'],
 	setup(props: any) {
 		const { type } = props;
-		let state = reactive({
+		let state = reactive<stateProps>({
 			tableData: [], // 表格数据
 			selectValue: 'username',
 			inputValue: '',
 			totalNum: 0,
 			pageSize: 10,
-			currentPage: 1
+			currentPage: 1,
+			updateDialog: false,
+			updateUserInfo: {
+				id: '',
+				username: '',
+				sex: '',
+				address: '',
+				type: ''
+			}
 		});
 
 		// selectType
@@ -103,8 +188,8 @@ export default {
 		];
 
 		/* 
-      获取用户数据
-    */
+      	获取用户数据
+    	*/
 		const getTableData = () => {
 			getUsersByTypePage({
 				type,
@@ -116,16 +201,8 @@ export default {
 				if (res.success) {
 					const { value, count } = res;
 					state.tableData = value.map((item: dataProps) => {
-						switch (item.type) {
-							case 1:
-								item.type = '管理员';
-								break;
-							case 2:
-								item.type = '学生';
-								break;
-							case 3:
-								item.type = '教师';
-						}
+						item.sex = Sex[item.sex as number];
+						item.type = UserType[item.type as number];
 						return item;
 					});
 					state.totalNum = count;
@@ -133,29 +210,94 @@ export default {
 			});
 		};
 
-   /* 
-    重置搜索调教
-   */
-    const resetInfo = () => {
-      state.selectValue = 'username'
-      state.inputValue = '',
-      getTableData()
-    }
+		/* 
+    	重置搜索调教
+   		*/
+		const resetInfo = () => {
+			state.selectValue = 'username';
+			(state.inputValue = ''), getTableData();
+		};
+
+		/* 删除用户 */
+		const deleteUserOption = (id: string) => {
+			deleteUser({ id }).then((res: any) => {
+				if (res.success) {
+					ElMessage.success({
+						message: res.message
+					});
+					getTableData();
+				} else {
+					ElMessage.error({
+						message: res.message
+					});
+				}
+			});
+		};
+
+		/* 修改用户信息弹出框弹出框 */
+		const openDialog = (row: dataProps) => {
+			const { id, sex, type, username, address } = row;
+			state.updateUserInfo.id = id;
+			state.updateUserInfo.sex = Sex[sex as number];
+			state.updateUserInfo.type = UserType[type as number];
+			state.updateUserInfo = {
+				id,
+				sex: Sex[sex as number],
+				type: UserType[type as number],
+				username,
+				address
+			};
+			state.updateDialog = true;
+		};
+
+		/* 关闭弹窗清空弹窗内的信息 */
+		const closeDialog = () => {
+			state.updateUserInfo = {
+				id: '',
+				username: '',
+				sex: '',
+				address: '',
+				type: ''
+			};
+			state.updateDialog = false;
+		};
+
+		/* 修改用户信息 */
+		const updateInfo = () => {
+			updateUserInfo(state.updateUserInfo).then((res: any) => {
+				if (res.success) {
+					ElMessage.success({
+						message: res.message
+					});
+					closeDialog();
+					getTableData();
+				} else {
+					ElMessage.error({
+						message: res.message
+					});
+				}
+			});
+		};
 
 		getTableData();
 
 		return {
 			selectType,
 			Search,
-      resetInfo,
+			resetInfo,
 			...toRefs(state),
-			getTableData
+			getTableData,
+			deleteUser,
+			deleteUserOption,
+			openDialog,
+			closeDialog,
+			updateInfo
 		};
 	}
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .el-input {
 	width: 200px;
 	margin: 0 10px;
@@ -170,5 +312,29 @@ export default {
 	display: flex;
 	justify-content: center;
 	margin-top: 20px;
+}
+.el-dialog {
+	padding: 20px;
+
+	.el-radio {
+		margin-right: 20px;
+	}
+	.el-input {
+		width: 300px;
+		margin: 0;
+	}
+
+	.el-form-item {
+		.el-button {
+			width: 130px;
+			&:not(:last-child) {
+				margin-right: 30px;
+			}
+		}
+	}
+
+	.box {
+		margin-bottom: 20px;
+	}
 }
 </style>
