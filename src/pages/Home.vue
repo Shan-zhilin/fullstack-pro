@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-29 16:43:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-01 20:08:12
+ * @LastEditTime: 2022-04-05 22:24:49
 -->
 <template>
   <div class="content">
@@ -31,7 +31,8 @@
           </el-icon>
           <span>教师管理</span>
         </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="4"
+                      @click="routetHop({path:'/notice'})">
           <el-icon>
             <bell />
           </el-icon>

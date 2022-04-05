@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-04 00:14:55
+ * @LastEditTime: 2022-04-05 22:44:31
 -->
 <template>
   <div>
@@ -26,9 +26,7 @@
       <el-button size="large"
                  class="upload-btn"
                  type="primary">
-        <el-icon>
-          <upload-filled />
-        </el-icon>上传
+        <el-icon><circle-plus-filled /></el-icon>添加
       </el-button>
     </el-card>
 
@@ -63,9 +61,7 @@
                      :page-size="pageSize"
                      :page-sizes="[10, 20, 30, 40]"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="totalNum"
-                     @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange" />
+                     :total="totalNum" />
     </el-card>
 
     <el-dialog v-model="updateDialog"
@@ -119,20 +115,20 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, toRefs, onMounted } from 'vue';
-import { Search, UploadFilled } from '@element-plus/icons-vue';
+import { reactive, toRefs } from 'vue';
+import { Search, CirclePlusFilled } from '@element-plus/icons-vue';
 import { getUsersByTypePage, deleteUser, updateUserInfo } from '@/api/user';
 import { ElMessage } from 'element-plus';
 interface dataProps {
-	id: string;
+	id?: string;
 	username?: string;
 	address?: string;
 	classes?: string;
 	createtime?: string;
 	modifytime?: string;
 	password?: string;
-	sex: string | number;
-	type: number | string;
+	sex?: string | number;
+	type?: number | string;
 	mailbox?: any;
 }
 interface stateProps {
@@ -144,6 +140,7 @@ interface stateProps {
 	currentPage: number;
 	updateDialog: boolean;
 	updateUserInfo: dataProps;
+	originRowsData: dataProps;
 }
 
 enum Sex {
@@ -158,7 +155,7 @@ enum UserType {
 }
 
 export default {
-	components: { UploadFilled },
+	components: { CirclePlusFilled },
 	props: ['type'],
 	setup(props: any) {
 		const { type } = props;
@@ -176,7 +173,8 @@ export default {
 				sex: '',
 				address: '',
 				type: ''
-			}
+			},
+			originRowsData: {}
 		});
 
 		// selectType
@@ -237,6 +235,7 @@ export default {
 		/* 修改用户信息弹出框弹出框 */
 		const openDialog = (row: dataProps) => {
 			const { id, sex, type, username, address } = row;
+			state.originRowsData = row;
 			state.updateUserInfo.id = id;
 			state.updateUserInfo.sex = Sex[sex as number];
 			state.updateUserInfo.type = UserType[type as number];
@@ -259,11 +258,34 @@ export default {
 				address: '',
 				type: ''
 			};
+			state.originRowsData = {};
 			state.updateDialog = false;
 		};
 
 		/* 修改用户信息 */
 		const updateInfo = () => {
+			const { username, address, sex, type } = state.originRowsData;
+			if (
+				username === state.updateUserInfo.username &&
+				address === state.updateUserInfo.address &&
+				Sex[sex as number] === state.updateUserInfo.sex &&
+				UserType[type as number] === state.updateUserInfo.type
+			) {
+				ElMessage.error({
+					message: '未修改数据禁止提交'
+				});
+				return
+			} else if (state.updateUserInfo.username === '') {
+				ElMessage.error({
+					message: '姓名不能为空'
+				});
+				return
+			} else if (state.updateUserInfo.address === '') {
+				ElMessage.error({
+					message: '籍贯不能为空'
+				});
+				return
+			}
 			updateUserInfo(state.updateUserInfo).then((res: any) => {
 				if (res.success) {
 					ElMessage.success({
