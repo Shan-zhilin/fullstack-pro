@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-05 22:00:40
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-05 23:10:01
+ * @LastEditTime: 2022-04-06 23:20:08
 -->
 <template>
   <div class="noticeContent">
@@ -15,7 +15,7 @@
                       value-format="YYYY-MM-DD HH:mm:ss"
                       size="large" />
       <el-input size="large"
-                v-model="inputValue"
+                v-model="title"
                 :prefix-icon="Search"
                 placeholder="通知标题" />
       <el-button size="large"
@@ -45,18 +45,18 @@
             <el-table-column label="操作"
                              fixed="right">
               <template #default="scope">
-                <el-button @click="openDialog(scope.row)">修改</el-button>
                 <el-button type="danger"
                            @click="deleteUserOption(scope.row.id)">删除</el-button>
               </template>
-            </el-table-column>>
-
+            </el-table-column>
           </el-table>
           <el-pagination :currentPage="currentPage"
                          :page-size="pageSize"
                          :page-sizes="[10, 20, 30, 40]"
                          layout="total, sizes, prev, pager, next, jumper"
-                         :total="totalNum" />
+                         :total="totalNum"
+                         @size-change="handleSizeChange"
+                         @current-change="handleCurrentChange" />
         </el-card>
       </el-col>
 
@@ -69,12 +69,15 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs } from 'vue';
+import { reactive, toRefs, ref } from 'vue';
 import { Search } from '@element-plus/icons-vue';
+import { getAllNotice } from '../api/notice';
+import { ElMessage } from 'element-plus';
 export default {
 	setup() {
 		const state = reactive({
 			dateRange: [], //搜索时间范围
+			title: '',
 			tableData: [],
 			totalNum: 0,
 			pageSize: 10,
@@ -83,12 +86,39 @@ export default {
 
 		/* 搜索函数 */
 		const search = () => {
-            console.log(state.dateRange)
-        };
+			//强转一下，datapicker点击清楚icon 会将数据改成 null
+			state.dateRange = Array.isArray(state.dateRange) ? state.dateRange : [];
+			getAllNotice({
+				title: state.title,
+				currPage: state.currentPage,
+				pageNum: state.pageSize,
+				startTime: state.dateRange[0] ? state.dateRange[0] : '',
+				endTime: state.dateRange[1] ? state.dateRange[1] : ''
+			}).then((res: any) => {
+				if (res.success) {
+					const { value, count } = res;
+					state.tableData = value;
+					state.totalNum = count;
+				} else {
+					ElMessage.error({
+						message: res.message
+					});
+				}
+			});
+		};
 
 		/* 重置函数 */
-		const reset = () => {};
+		const reset = () => {
+      state.dateRange = []
+      state.title = ''
+      state.tableData = []
+      state.totalNum = 0
+      state.pageSize  = 10
+      state.currentPage = 1
+      search()
+    };
 
+		search();
 		return {
 			...toRefs(state),
 			search,
@@ -119,6 +149,10 @@ export default {
 			height: 100%;
 		}
 	}
+	.el-pagination {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+	}
 }
-
 </style>

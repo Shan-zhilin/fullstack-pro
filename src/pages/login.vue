@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 15:12:27
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-01 17:07:44
+ * @LastEditTime: 2022-04-06 21:45:07
 -->
 <template>
   <div class="content">
@@ -14,7 +14,8 @@
       <el-input size="large"
                 placeholder="请输入密码"
                 type="password"
-                v-model="loginData.password" />
+                v-model="loginData.password"
+				@keyup.enter.native="login" />
       <div class="redio">
         <el-radio v-model="loginData.type"
                   :label="1"

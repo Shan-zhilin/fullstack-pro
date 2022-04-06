@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-05 22:44:31
+ * @LastEditTime: 2022-04-05 23:32:30
 -->
 <template>
   <div>
@@ -26,7 +26,9 @@
       <el-button size="large"
                  class="upload-btn"
                  type="primary">
-        <el-icon><circle-plus-filled /></el-icon>添加
+        <el-icon>
+          <circle-plus-filled />
+        </el-icon>添加
       </el-button>
     </el-card>
 
@@ -61,7 +63,9 @@
                      :page-size="pageSize"
                      :page-sizes="[10, 20, 30, 40]"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="totalNum" />
+                     :total="totalNum"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange" />
     </el-card>
 
     <el-dialog v-model="updateDialog"
@@ -274,17 +278,17 @@ export default {
 				ElMessage.error({
 					message: '未修改数据禁止提交'
 				});
-				return
+				return;
 			} else if (state.updateUserInfo.username === '') {
 				ElMessage.error({
 					message: '姓名不能为空'
 				});
-				return
+				return;
 			} else if (state.updateUserInfo.address === '') {
 				ElMessage.error({
 					message: '籍贯不能为空'
 				});
-				return
+				return;
 			}
 			updateUserInfo(state.updateUserInfo).then((res: any) => {
 				if (res.success) {
