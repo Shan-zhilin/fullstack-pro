@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-05 23:32:30
+ * @LastEditTime: 2022-04-07 23:01:36
 -->
 <template>
   <div>
@@ -41,6 +41,8 @@
                          label="学号" />
         <el-table-column prop="username"
                          label="姓名" />
+        <el-table-column prop="tell"
+                         label="手机号" />
         <el-table-column prop="sex"
                          label="性别" />
         <el-table-column prop="address"
@@ -53,8 +55,14 @@
                          fixed="right">
           <template #default="scope">
             <el-button @click="openDialog(scope.row)">修改</el-button>
-            <el-button type="danger"
-                       @click="deleteUserOption(scope.row.id)">删除</el-button>
+            <el-popconfirm title="确定删除吗?"
+                           confirmButtonText="确认"
+						   cancelButtonText="取消"
+                           @confirm="deleteUserOption(scope.row.id)">
+              <template #reference>
+                <el-button type="danger">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>>
 

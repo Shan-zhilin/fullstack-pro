@@ -14,10 +14,13 @@ declare global {
   const ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
   const ElOption: typeof import('element-plus/es')['ElOption']
   const ElPagination: typeof import('element-plus/es')['ElPagination']
+  const ElPopconfirm: typeof import('element-plus/es')['ElPopconfirm']
+  const ElPopover: typeof import('element-plus/es')['ElPopover']
   const ElRadio: typeof import('element-plus/es')['ElRadio']
   const ElRow: typeof import('element-plus/es')['ElRow']
   const ElSelect: typeof import('element-plus/es')['ElSelect']
   const ElTable: typeof import('element-plus/es')['ElTable']
   const ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+  const ElTag: typeof import('element-plus/es')['ElTag']
 }
 export {}

@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-05 22:00:40
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-06 23:20:08
+ * @LastEditTime: 2022-04-07 22:51:43
 -->
 <template>
   <div class="noticeContent">
@@ -45,8 +45,14 @@
             <el-table-column label="操作"
                              fixed="right">
               <template #default="scope">
-                <el-button type="danger"
-                           @click="deleteUserOption(scope.row.id)">删除</el-button>
+                <el-popconfirm title="确定删除吗?"
+                               confirmButtonText="确认"
+                               cancelButtonText="取消"
+                               @confirm="deleteUserOption(scope.row.n_id)">
+                  <template #reference>
+                    <el-button type="danger">删除</el-button>
+                  </template>
+                </el-popconfirm>
               </template>
             </el-table-column>
           </el-table>
@@ -71,7 +77,7 @@
 <script lang="ts">
 import { reactive, toRefs, ref } from 'vue';
 import { Search } from '@element-plus/icons-vue';
-import { getAllNotice } from '../api/notice';
+import { getAllNotice, deleteNotice } from '../api/notice';
 import { ElMessage } from 'element-plus';
 export default {
 	setup() {
@@ -109,21 +115,39 @@ export default {
 
 		/* 重置函数 */
 		const reset = () => {
-      state.dateRange = []
-      state.title = ''
-      state.tableData = []
-      state.totalNum = 0
-      state.pageSize  = 10
-      state.currentPage = 1
-      search()
+			state.dateRange = [];
+			state.title = '';
+			state.tableData = [];
+			state.totalNum = 0;
+			state.pageSize = 10;
+			state.currentPage = 1;
+			search();
+		};
+    
+    /* 删除函数 */
+    const deleteUserOption = (id: number) => {
+      deleteNotice({
+        n_id: id
+      }).then((res: any) => {
+        if (res.success) {
+          ElMessage.success({
+            message: '删除成功'
+          });
+          search();
+        } else {
+          ElMessage.error({
+            message: res.message
+          });
+        }
+      });
     };
-
 		search();
 		return {
 			...toRefs(state),
 			search,
 			reset,
-			Search
+			Search,
+      deleteUserOption
 		};
 	}
 };
