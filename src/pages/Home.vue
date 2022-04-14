@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-29 16:43:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-05 22:24:49
+ * @LastEditTime: 2022-04-14 15:23:51
 -->
 <template>
   <div class="content">
@@ -38,11 +38,12 @@
           </el-icon>
           <span>通知管理</span>
         </el-menu-item>
-        <el-menu-item index="5">
+        <el-menu-item index="5"
+                      @click="routetHop({path:'/classes'})">
           <el-icon>
             <circle-plus />
           </el-icon>
-          <span>添加班级</span>
+          <span>班级管理</span>
         </el-menu-item>
       </div>
 

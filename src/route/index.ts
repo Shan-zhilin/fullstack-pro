@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 14:44:43
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-05 22:24:13
+ * @LastEditTime: 2022-04-07 23:50:19
  */
 import { createRouter, createWebHashHistory } from 'vue-router';
 const login = () => import('../pages/Login.vue');
@@ -10,7 +10,8 @@ const home = () => import('../pages/Home.vue');
 const board = () => import('@/components/Board.vue');
 const studentHome = () => import('@/pages/StudentHome.vue');
 const teacherHome = () => import('@/pages/TeacherHome.vue');
-const noticedHome = () => import('@/pages/Noticed.vue')
+const noticedHome = () => import('@/pages/Noticed.vue');
+const classHome = () => import('@/pages/Classes.vue');
 
 const routes = [
 	{ path: '/', redirect: '/home' },
@@ -23,7 +24,8 @@ const routes = [
 			{ path: '/home/board', component: board },
 			{ path: '/student/home', component: studentHome },
 			{ path: '/teacher/home', component: teacherHome },
-			{ path: '/notice', component: noticedHome }
+			{ path: '/notice', component: noticedHome },
+			{ path: '/classes', component: classHome }
 		]
 	}
 ];

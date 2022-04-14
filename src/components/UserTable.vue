@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-07 23:01:36
+ * @LastEditTime: 2022-04-14 22:01:50
 -->
 <template>
   <div>
@@ -34,7 +34,7 @@
 
     <el-card class="card">
       <el-table style="width: 100%"
-                max-height="450"
+                max-height="435"
                 :data="tableData">
         <el-table-column fixed
                          prop="id"
@@ -48,7 +48,8 @@
         <el-table-column prop="address"
                          label="籍贯" />
         <el-table-column prop="classes"
-                         label="班级" />
+                         label="班级"
+						 v-if="type == 2" />
         <el-table-column prop="type"
                          label="类型" />
         <el-table-column label="操作"
@@ -58,7 +59,7 @@
             <el-popconfirm title="确定删除吗?"
                            confirmButtonText="确认"
 						   cancelButtonText="取消"
-                           @confirm="deleteUserOption(scope.row.id)">
+                           @confirm="deleteUserOption(scope.row)">
               <template #reference>
                 <el-button type="danger">删除</el-button>
               </template>
@@ -229,8 +230,9 @@ export default {
 		};
 
 		/* 删除用户 */
-		const deleteUserOption = (id: string) => {
-			deleteUser({ id }).then((res: any) => {
+		const deleteUserOption = (row:dataProps) => {
+			const {id,type} = row;
+			deleteUser({ id,type:UserType[type as number] }).then((res: any) => {
 				if (res.success) {
 					ElMessage.success({
 						message: res.message
@@ -316,6 +318,7 @@ export default {
 		getTableData();
 
 		return {
+			type,
 			selectType,
 			Search,
 			resetInfo,
