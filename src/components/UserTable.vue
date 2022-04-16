@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-14 22:01:50
+ * @LastEditTime: 2022-04-16 22:40:44
 -->
 <template>
   <div>
@@ -25,7 +25,8 @@
                  @click="resetInfo">重置</el-button>
       <el-button size="large"
                  class="upload-btn"
-                 type="primary">
+                 type="primary"
+                 @click="routerHop({name:'UserInfo',params:{type}})">
         <el-icon>
           <circle-plus-filled />
         </el-icon>添加
@@ -49,7 +50,7 @@
                          label="籍贯" />
         <el-table-column prop="classes"
                          label="班级"
-						 v-if="type == 2" />
+                         v-if="type == 2" />
         <el-table-column prop="type"
                          label="类型" />
         <el-table-column label="操作"
@@ -58,7 +59,7 @@
             <el-button @click="openDialog(scope.row)">修改</el-button>
             <el-popconfirm title="确定删除吗?"
                            confirmButtonText="确认"
-						   cancelButtonText="取消"
+                           cancelButtonText="取消"
                            @confirm="deleteUserOption(scope.row)">
               <template #reference>
                 <el-button type="danger">删除</el-button>
@@ -105,14 +106,17 @@
           <el-radio v-model="updateUserInfo.type"
                     :label="1"
                     border
+                    disabled
                     size="large">管理员</el-radio>
           <el-radio v-model="updateUserInfo.type"
                     :label="2"
                     border
+                    disabled
                     size="large">学生</el-radio>
           <el-radio v-model="updateUserInfo.type"
                     :label="3"
                     border
+                    disabled
                     size="large">教师</el-radio>
         </el-form-item>
         <el-form-item>
@@ -129,6 +133,7 @@
 
 <script lang="ts">
 import { reactive, toRefs } from 'vue';
+import { useRouter } from 'vue-router';
 import { Search, CirclePlusFilled } from '@element-plus/icons-vue';
 import { getUsersByTypePage, deleteUser, updateUserInfo } from '@/api/user';
 import { ElMessage } from 'element-plus';
@@ -172,6 +177,7 @@ export default {
 	props: ['type'],
 	setup(props: any) {
 		const { type } = props;
+		const router = useRouter();
 		let state = reactive<stateProps>({
 			tableData: [], // 表格数据
 			selectValue: 'username',
@@ -230,9 +236,9 @@ export default {
 		};
 
 		/* 删除用户 */
-		const deleteUserOption = (row:dataProps) => {
-			const {id,type} = row;
-			deleteUser({ id,type:UserType[type as number] }).then((res: any) => {
+		const deleteUserOption = (row: dataProps) => {
+			const { id, type } = row;
+			deleteUser({ id, type: UserType[type as number] }).then((res: any) => {
 				if (res.success) {
 					ElMessage.success({
 						message: res.message
@@ -314,6 +320,11 @@ export default {
 				}
 			});
 		};
+		
+		/* 路由跳转函数 */
+		const routerHop = (args:any) => {
+			router.push(args);
+		}
 
 		getTableData();
 
@@ -328,7 +339,8 @@ export default {
 			deleteUserOption,
 			openDialog,
 			closeDialog,
-			updateInfo
+			updateInfo,
+			routerHop
 		};
 	}
 };
