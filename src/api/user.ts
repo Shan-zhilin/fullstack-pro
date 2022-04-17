@@ -45,4 +45,12 @@ export async function updateUserInfo(data:any) {
 	})
 }
 
+// 添加一个新用户
+export async function addUser(data:any) {
+	return await request('/users/addUserdata',{
+		method: 'post',
+		data
+	})
+}
+
 

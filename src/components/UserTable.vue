@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-16 22:40:44
+ * @LastEditTime: 2022-04-17 23:51:38
 -->
 <template>
   <div>
@@ -26,7 +26,7 @@
       <el-button size="large"
                  class="upload-btn"
                  type="primary"
-                 @click="routerHop({name:'UserInfo',params:{type}})">
+                 @click="routerHop({name:'UserInfo',params:{id:'210104050423'}})">
         <el-icon>
           <circle-plus-filled />
         </el-icon>添加
@@ -96,6 +96,10 @@
         <el-form-item label="地址">
           <el-input v-model="updateUserInfo.address" />
         </el-form-item>
+        <el-form-item label="密码">
+          <el-input type="password"
+                    v-model="updateUserInfo.password" />
+        </el-form-item>
         <el-form-item label="性别">
           <el-radio v-model="updateUserInfo.sex"
                     :label="1">男</el-radio>
@@ -103,21 +107,7 @@
                     :label="0">女</el-radio>
         </el-form-item>
         <el-form-item label="类型">
-          <el-radio v-model="updateUserInfo.type"
-                    :label="1"
-                    border
-                    disabled
-                    size="large">管理员</el-radio>
-          <el-radio v-model="updateUserInfo.type"
-                    :label="2"
-                    border
-                    disabled
-                    size="large">学生</el-radio>
-          <el-radio v-model="updateUserInfo.type"
-                    :label="3"
-                    border
-                    disabled
-                    size="large">教师</el-radio>
+          <span>{{updateUserInfo.type}}</span>
         </el-form-item>
         <el-form-item>
           <el-button size="large"
@@ -191,7 +181,8 @@ export default {
 				username: '',
 				sex: '',
 				address: '',
-				type: ''
+				type: '',
+				password: ''
 			},
 			originRowsData: {}
 		});
@@ -254,17 +245,15 @@ export default {
 
 		/* 修改用户信息弹出框弹出框 */
 		const openDialog = (row: dataProps) => {
-			const { id, sex, type, username, address } = row;
+			const { id, sex, type, username, address, password } = row;
 			state.originRowsData = row;
-			state.updateUserInfo.id = id;
-			state.updateUserInfo.sex = Sex[sex as number];
-			state.updateUserInfo.type = UserType[type as number];
 			state.updateUserInfo = {
 				id,
 				sex: Sex[sex as number],
-				type: UserType[type as number],
+				type,
 				username,
-				address
+				address,
+				password
 			};
 			state.updateDialog = true;
 		};
@@ -284,12 +273,13 @@ export default {
 
 		/* 修改用户信息 */
 		const updateInfo = () => {
-			const { username, address, sex, type } = state.originRowsData;
+			const { username, address, sex, type, password } = state.originRowsData;
 			if (
 				username === state.updateUserInfo.username &&
 				address === state.updateUserInfo.address &&
 				Sex[sex as number] === state.updateUserInfo.sex &&
-				UserType[type as number] === state.updateUserInfo.type
+				UserType[type as number] === state.updateUserInfo.type &&
+				password === state.updateUserInfo.password
 			) {
 				ElMessage.error({
 					message: '未修改数据禁止提交'
@@ -306,7 +296,9 @@ export default {
 				});
 				return;
 			}
-			updateUserInfo(state.updateUserInfo).then((res: any) => {
+			const info = JSON.parse(JSON.stringify(state.updateUserInfo));
+			info.type = UserType[state.updateUserInfo.type as number];
+			updateUserInfo({ info: JSON.stringify(info) }).then((res: any) => {
 				if (res.success) {
 					ElMessage.success({
 						message: res.message
@@ -320,11 +312,11 @@ export default {
 				}
 			});
 		};
-		
+
 		/* 路由跳转函数 */
-		const routerHop = (args:any) => {
+		const routerHop = (args: any) => {
 			router.push(args);
-		}
+		};
 
 		getTableData();
 

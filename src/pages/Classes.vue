@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-07 23:47:35
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-14 23:34:06
+ * @LastEditTime: 2022-04-17 20:01:43
 -->
 <template>
   <div class="noticeContent">
@@ -97,11 +97,14 @@ export default {
 		});
 
 		// 获取列表数据
-		const getTableData = () => {
+		const getTableData = () => { 
+      const queryInfo = state.classname ? {
+        classname: state.classname
+      } : {};
 			getClassList({
         pageNum: state.pageSize,
 				currPage: state.currentPage,
-        classname:state.classname
+        queryInfo: JSON.stringify(queryInfo)
       }).then((res: any) => {
           if(res.success) {
             state.tableData = res.value;
