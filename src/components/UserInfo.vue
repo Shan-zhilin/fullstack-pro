@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-16 16:14:42
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-17 23:53:50
+ * @LastEditTime: 2022-04-21 23:56:01
 -->
 <template>
   <div class="userInfoContent">
@@ -93,7 +93,9 @@
           <h3>上传头像</h3>
           <el-upload class="upload-demo"
                      drag
-                     action="https://jsonplaceholder.typicode.com/posts/">
+                     action="/api/upload"
+					 :show-file-list="false"
+					 @success="uploadSucess">
             <el-icon class="el-icon--upload">
               <upload-filled />
             </el-icon>
@@ -240,6 +242,19 @@ export default {
 			}
 		};
 
+		// 文件上传成功处理函数
+		const uploadSucess = (res:any) => {
+			if (res.success) {
+				ElMessage.success({
+					message: '上传成功'
+				})
+				state.info.head = res.url;
+			}else {
+				ElMessage.error({
+					message: '上传失败'
+				})
+			}
+		}
 		// 获取班级列表
 		getClasses({});
 		return {
@@ -247,6 +262,7 @@ export default {
 			id,
 			dateChange,
 			confirmhandler,
+			uploadSucess,
 			...toRefs(state)
 		};
 	}
@@ -274,6 +290,7 @@ export default {
 		.avatar {
 			display: flex;
 			align-items: center;
+			margin-top: 20px;
 			span {
 				margin-right: 30px;
 			}

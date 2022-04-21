@@ -8,6 +8,8 @@ const HOST_URL = location.protocol + '//' + location.host + '/api';
 axios.interceptors.request.use((config: any) => {
 	const token = window.localStorage.getItem('token');
 	config.headers.common['Authorization'] = 'Bearer ' + token; // 留意这里的 Authorization
+	config.headers.common['Content-Type'] =
+		'application/json;multipart/form-data;text/plain; charset=utf-8';
 	return config;
 });
 
@@ -33,11 +35,11 @@ axios.interceptors.response.use(
 				// 未登录则跳转登录页面，并携带当前页面的路径
 				// 在登录成功后返回当前页面，这一步需要在登录页操作。
 				case 401:
-                    ElMessage.error({
+					ElMessage.error({
 						message: '用户未登录或登录信息已过期'
 					});
 					localStorage.removeItem('token');
-                    router.replace('/login')
+					router.replace('/login');
 					setTimeout(() => {
 						router.replace('/login');
 					}, 1000);
