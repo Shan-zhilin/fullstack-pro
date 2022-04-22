@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-16 16:14:42
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-21 23:56:01
+ * @LastEditTime: 2022-04-22 23:05:27
 -->
 <template>
   <div class="userInfoContent">
@@ -94,8 +94,9 @@
           <el-upload class="upload-demo"
                      drag
                      action="/api/upload"
-					 :show-file-list="false"
-					 @success="uploadSucess">
+                     :show-file-list="false"
+                     :on-success="uploadSucess"
+                     :before-upload="beforeUpload">
             <el-icon class="el-icon--upload">
               <upload-filled />
             </el-icon>
@@ -122,6 +123,7 @@ import { UploadFilled } from '@element-plus/icons-vue';
 import { addUser, updateUserInfo } from '../api/user';
 import { getClassList } from '../api/class';
 import { ElMessage } from 'element-plus';
+import type { UploadFile } from 'element-plus';
 
 export default {
 	components: {
@@ -212,20 +214,20 @@ export default {
 						});
 						return;
 					} else {
-            updateinfo.password = updateinfo.repassword
+						updateinfo.password = updateinfo.repassword;
 					}
 				}
-        updateUserInfo({ info: JSON.stringify(updateinfo) }).then((res:any) => {
-          if (res.success) {
-            ElMessage.success({
-              message: '修改成功'
-            });
-          }else {
-            ElMessage.error({
-              message: '修改失败'
-            });
-          }
-        })
+				updateUserInfo({ info: JSON.stringify(updateinfo) }).then((res: any) => {
+					if (res.success) {
+						ElMessage.success({
+							message: '修改成功'
+						});
+					} else {
+						ElMessage.error({
+							message: '修改失败'
+						});
+					}
+				});
 			} else {
 				//不存在则为新增
 				addUser({ info: JSON.stringify(state.info) }).then((res: any) => {
@@ -243,18 +245,44 @@ export default {
 		};
 
 		// 文件上传成功处理函数
-		const uploadSucess = (res:any) => {
+		const uploadSucess = (res: any) => {
 			if (res.success) {
-				ElMessage.success({
-					message: '上传成功'
-				})
 				state.info.head = res.url;
-			}else {
+				if (id) {
+					const updateinfo = {
+						id,
+						head: res.url,
+						type: state.info.type
+					};
+					updateUserInfo({ info: JSON.stringify(updateinfo) }).then((response: any) => {
+						if (response.success) {
+							ElMessage.success({
+								message: '上传成功'
+							});
+						}
+					});
+				} else {
+					ElMessage.info({
+						message: '请填写基本信息'
+					});
+				}
+			} else {
 				ElMessage.error({
 					message: '上传失败'
-				})
+				});
 			}
-		}
+		};
+
+		const beforeUpload = (file: UploadFile) => {
+			const { size } = file;
+			// 判断图片尺寸是否超过2M
+			if (Number(size) > 1024 * 1024 * 2) {
+				ElMessage.error({
+					message: '图片尺寸不能超过2M'
+				});
+				return false;
+			}
+		};
 		// 获取班级列表
 		getClasses({});
 		return {
@@ -263,6 +291,7 @@ export default {
 			dateChange,
 			confirmhandler,
 			uploadSucess,
+			beforeUpload,
 			...toRefs(state)
 		};
 	}
@@ -279,6 +308,9 @@ export default {
 			.el-card.is-always-shadow {
 				height: 100%;
 			}
+		}
+		.el-form-item {
+			margin-bottom: 14px;
 		}
 		h3 {
 			margin: 0 0 15px 0;

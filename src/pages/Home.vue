@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-29 16:43:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-14 15:23:51
+ * @LastEditTime: 2022-04-22 21:54:59
 -->
 <template>
   <div class="content">
@@ -199,6 +199,7 @@ export default {
 	display: flex;
 
 	.el-menu-vertical-demo {
+		// flex-shrink: 0;
 		width: 200px;
 		min-height: 100vh;
 		padding-top: 20px;
@@ -231,7 +232,8 @@ export default {
 	}
 
 	.rightBody {
-		flex: 1;
+		width: calc(100% - 200px);
+		height: 100vh;
 		nav {
 			display: flex;
 			justify-content: space-between;
