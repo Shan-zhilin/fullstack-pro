@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 14:44:43
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-16 16:44:43
+ * @LastEditTime: 2022-04-28 20:15:09
  */
 import { createRouter, createWebHashHistory } from 'vue-router';
 const login = () => import('../pages/Login.vue');
@@ -13,6 +13,10 @@ const teacherHome = () => import('@/pages/TeacherHome.vue');
 const noticedHome = () => import('@/pages/Noticed.vue');
 const classHome = () => import('@/pages/Classes.vue');
 const userInfo = () => import('@/components/UserInfo.vue');
+const studentNotice = () => import('@/pages/StudentNotice.vue');
+const studetLeave = () => import('@/pages/StudentLeave.vue');
+const studentHealthy = () => import('@/pages/StudentHealthy.vue');
+const studentInfo = () => import('@/pages/StudentInfo.vue');
 
 
 const routes = [
@@ -25,6 +29,10 @@ const routes = [
 		children: [
 			{ path: '/home/board', component: board },
 			{ path: '/student/home', component: studentHome },
+			{ path: '/student/notice', component: studentNotice },
+			{ path: '/student/leave', component: studetLeave },
+			{ path: '/student/healthy', component: studentHealthy },
+			{ path: '/student/info', component: studentInfo },
 			{ path: '/teacher/home', component: teacherHome },
 			{ path: '/notice', component: noticedHome },
 			{ path: '/classes', component: classHome },

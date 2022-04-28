@@ -99,7 +99,7 @@ export default {
 				currPage: state.currentPage,
 				pageNum: state.pageSize,
 				startTime: state.dateRange[0] ? state.dateRange[0] : '',
-				endTime: state.dateRange[1] ? state.dateRange[1] : ''
+				endTime: state.dateRange[1] ? state.dateRange[1] : '',
 			}).then((res: any) => {
 				if (res.success) {
 					const { value, count } = res;

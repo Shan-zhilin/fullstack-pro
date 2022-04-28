@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-29 16:43:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-22 21:54:59
+ * @LastEditTime: 2022-04-28 20:17:11
 -->
 <template>
   <div class="content">
@@ -48,25 +48,29 @@
       </div>
 
       <div v-show="userInfo.type === 2">
-        <el-menu-item index="6">
+        <el-menu-item index="6"
+                      @click="routetHop({path:'/student/notice'})">
           <el-icon>
             <bell />
           </el-icon>
           <span>我的通知</span>
         </el-menu-item>
-        <el-menu-item index="7">
+        <el-menu-item index="7"
+                      @click="routetHop({path:'/student/healthy'})">
           <el-icon>
             <document />
           </el-icon>
           <span>健康填报</span>
         </el-menu-item>
-        <el-menu-item index="8">
+        <el-menu-item index="8"
+                      @click="routetHop({path:'/student/leave'})">
           <el-icon>
             <chat-line-square />
           </el-icon>
           <span>请假申请</span>
         </el-menu-item>
-        <el-menu-item index="9">
+        <el-menu-item index="9"
+                      @click="routetHop({path:'/student/info'})">
           <el-icon>
             <message />
           </el-icon>
@@ -165,8 +169,8 @@ export default {
 
 		// 退出方法
 		const quit = () => {
-			router.push('/');
 			window.localStorage.removeItem('token');
+			router.push('/login');
 		};
 
 		// 获取验证信息
