@@ -2,11 +2,11 @@
  * @Author: shanzhilin
  * @Date: 2022-04-28 19:42:38
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-28 23:47:43
+ * @LastEditTime: 2022-04-29 21:33:53
 -->
 <template>
   <div class="noticeContent">
-
+	
     <el-card>
       <el-date-picker v-model="dateRange"
                       type="datetimerange"
@@ -48,7 +48,8 @@
                          fixed="right">
           <template #default="scope">
             <el-button :type="scope.row.status == 0 ? 'danger':'primary'"
-                       :disabled="scope.row.status == 1">{{scope.row.status == 0 ? '阅读' : '已读'}}</el-button>
+                       :disabled="scope.row.status == 1"
+                       @click="readnotice(scope.row.n_id)">{{scope.row.status == 0 ? '阅读' : '已读'}}</el-button>
           </template>
         </el-table-column>>
 
@@ -67,7 +68,7 @@
 <script lang="ts">
 import { reactive, toRefs } from 'vue';
 import { Search } from '@element-plus/icons-vue';
-import { getAllNotice, getAllRead } from '../api/notice';
+import { getAllNotice, getAllRead,readNotice } from '../api/notice';
 import { getUserDataByToken } from '../api/user';
 import { ElMessage } from 'element-plus';
 export default {
@@ -145,6 +146,22 @@ export default {
 			search();
 		};
 
+		/* 阅读通知 */
+		const readnotice =(n_id:string) => {
+			console.log(n_id,state.userinfo.id)
+			readNotice({
+				n_id:n_id,
+				u_id: state.userinfo.id
+			}).then((res: any) => {
+				if (res.success) {
+					ElMessage.success('阅读成功');
+					search();
+				} else {
+					ElMessage.error(res.message);
+				}
+			});
+		};
+
 		getUserId();
 
 		return {
@@ -152,6 +169,7 @@ export default {
 			search,
 			reset,
 			getUserId,
+			readnotice,
 			...toRefs(state)
 		};
 	}
