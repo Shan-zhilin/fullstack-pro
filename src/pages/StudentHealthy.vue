@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-28 19:45:34
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-29 23:06:23
+ * @LastEditTime: 2022-04-30 00:12:27
 -->
 <template>
   <div>
@@ -14,27 +14,34 @@
       </template>
       <el-row :gutter="50">
         <el-col :span="12">
-          <el-form :model="form"
+          <el-form ref="ruleFormRef"
+                   :model="form"
+                   :rules="rules"
                    label-width="auto"
                    :label-position="labelPosition"
                    :size="size">
-            <el-form-item label="姓名">
+            <el-form-item label="姓名"
+                          prop="username">
               <el-input type="text"
                         v-model="form.username" />
             </el-form-item>
-            <el-form-item label="学号">
+            <el-form-item label="学号"
+                          prop="u_id">
               <el-input type="text"
                         v-model="form.u_id" />
             </el-form-item>
-            <el-form-item label="班级">
+            <el-form-item label="班级"
+                          prop="classes">
               <el-input type="text"
                         v-model="form.classes" />
             </el-form-item>
-            <el-form-item label="体温">
+            <el-form-item label="体温"
+                          prop="tempeature">
               <el-input type="text"
                         v-model="form.tempeature" />
             </el-form-item>
-            <el-form-item label="口罩数量">
+            <el-form-item label="口罩数量"
+                          prop="musknum">
               <el-input type="text"
                         v-model="form.musknum" />
             </el-form-item>
@@ -94,10 +101,9 @@
               <el-radio v-model="form.kill"
                         :label="1">是</el-radio>
             </el-form-item>
-            <el-button @click="submit"
+            <el-button @click="submit(ruleFormRef)"
                        type="primary"
                        size="large">提交</el-button>
-
           </el-form>
         </el-col>
       </el-row>
@@ -107,7 +113,9 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs } from 'vue';
+import { reactive, toRefs, ref } from 'vue';
+import { createHealthyApply } from '@/api/healthy';
+import { ElMessage, FormInstance, FormRules } from 'element-plus';
 export default {
 	setup() {
 		const state = reactive({
@@ -116,6 +124,7 @@ export default {
 				classes: '',
 				u_id: '',
 				tempeature: '',
+				musknum: '',
 				hot: 0,
 				gohospital: 0,
 				goheighrisk: 0,
@@ -123,12 +132,32 @@ export default {
 				touchheighrisk: 0,
 				leaveout: 0,
 				hesuan: 0,
-				musknum: '',
 				kill: 0
 			}
 		});
+		const ruleFormRef = ref<FormInstance>();
+		const rules = reactive<FormRules>({
+			username: [{ required: true, message: '请输姓名', trigger: 'blur' }],
+			classes: [{ required: true, message: '请输入班级', trigger: 'blur' }],
+			u_id: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+			tempeature: [{ required: true, message: '请输入体温', trigger: 'blur' }],
+			musknum: [{ required: true, message: '请输入口罩数量', trigger: 'blur' }]
+		});
 
+		const submit = async (formEl: FormInstance | undefined) => {
+			if (!formEl) return
+			await formEl.validate((valid, fields) => {
+				if (valid) {
+					console.log('submit!');
+				} else {
+					ElMessage.error('健康表必填信息未填写')
+				}
+			});
+		};
 		return {
+			rules,
+			ruleFormRef,
+			submit,
 			...toRefs(state)
 		};
 	}
