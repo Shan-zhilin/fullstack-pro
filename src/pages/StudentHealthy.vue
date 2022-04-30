@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-28 19:45:34
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-30 00:12:27
+ * @LastEditTime: 2022-04-30 16:28:24
 -->
 <template>
   <div>
@@ -32,18 +32,28 @@
             </el-form-item>
             <el-form-item label="班级"
                           prop="classes">
-              <el-input type="text"
-                        v-model="form.classes" />
+              <el-date-picker type="year"
+                              v-model="greade"
+                              placeholder="年级"
+                              @change="getClsses" />
+              <el-select v-model="form.classes"
+                         placeholder="Select">
+                <el-option v-for="item in classList"
+                           :key="item.c_id"
+                           :label="item.classname"
+                           :value="item.classname" />
+              </el-select>
             </el-form-item>
             <el-form-item label="体温"
-                          prop="tempeature">
+                          prop="temperature"
+                          type="number">
               <el-input type="text"
-                        v-model="form.tempeature" />
+                        v-model="form.temperature" />
             </el-form-item>
             <el-form-item label="口罩数量"
-                          prop="musknum">
+                          prop="masknum">
               <el-input type="text"
-                        v-model="form.musknum" />
+                        v-model="form.masknum" />
             </el-form-item>
             <el-form-item label="是否发烧">
               <el-radio v-model="form.hot"
@@ -96,9 +106,9 @@
                         :label="1">是</el-radio>
             </el-form-item>
             <el-form-item label="消毒用品书否充足">
-              <el-radio v-model="form.kill"
+              <el-radio v-model="form.kills"
                         :label="0">否</el-radio>
-              <el-radio v-model="form.kill"
+              <el-radio v-model="form.kills"
                         :label="1">是</el-radio>
             </el-form-item>
             <el-button @click="submit(ruleFormRef)"
@@ -115,6 +125,7 @@
 <script lang="ts">
 import { reactive, toRefs, ref } from 'vue';
 import { createHealthyApply } from '@/api/healthy';
+import { getClassList } from '../api/class';
 import { ElMessage, FormInstance, FormRules } from 'element-plus';
 export default {
 	setup() {
@@ -123,8 +134,8 @@ export default {
 				username: '',
 				classes: '',
 				u_id: '',
-				tempeature: '',
-				musknum: '',
+				temperature: '',
+				masknum: '',
 				hot: 0,
 				gohospital: 0,
 				goheighrisk: 0,
@@ -132,32 +143,63 @@ export default {
 				touchheighrisk: 0,
 				leaveout: 0,
 				hesuan: 0,
-				kill: 0
-			}
+				kills: 0
+			},
+			greade: '',
+			classList: []
 		});
 		const ruleFormRef = ref<FormInstance>();
 		const rules = reactive<FormRules>({
 			username: [{ required: true, message: '请输姓名', trigger: 'blur' }],
 			classes: [{ required: true, message: '请输入班级', trigger: 'blur' }],
 			u_id: [{ required: true, message: '请输入学号', trigger: 'blur' }],
-			tempeature: [{ required: true, message: '请输入体温', trigger: 'blur' }],
-			musknum: [{ required: true, message: '请输入口罩数量', trigger: 'blur' }]
+			temperature: [{ required: true, message: '请输入体温', trigger: 'blur' }],
+			masknum: [{ required: true, message: '请输入口罩数量', trigger: 'blur' }]
 		});
 
 		const submit = async (formEl: FormInstance | undefined) => {
-			if (!formEl) return
+			if (!formEl) return;
 			await formEl.validate((valid, fields) => {
 				if (valid) {
-					console.log('submit!');
+					createHealthyApply(state.form).then((res: any) => {
+						if (res.success) {
+							ElMessage.success({
+								message: res.message
+							});
+						} else {
+							ElMessage.error({
+								message: res.message
+							});
+						}
+					});
 				} else {
-					ElMessage.error('健康表必填信息未填写')
+					ElMessage.error('健康表必填信息未填写');
 				}
 			});
 		};
+
+		// 年级选项发生变化时重新请求对应的班级列表
+		const getClsses = () => {
+			const year = new Date(state.greade).getFullYear();
+			getClassList((!year || year == 1970) ? {} : { queryInfo: JSON.stringify({ grade: year }) }).then(
+				(res: any) => {
+					if (res.success) {
+						state.classList = res.value;
+					} else {
+						ElMessage.error({
+							message: '班级列表获取失败'
+						});
+					}
+				}
+			);
+		};
+
+    getClsses()
 		return {
 			rules,
 			ruleFormRef,
 			submit,
+      getClsses,
 			...toRefs(state)
 		};
 	}
@@ -171,5 +213,8 @@ h3 {
 }
 .el-button {
 	width: 300px;
+}
+.el-select {
+  margin-left: 30px;
 }
 </style>
