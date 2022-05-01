@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-16 16:14:42
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-22 23:05:27
+ * @LastEditTime: 2022-05-01 23:13:55
 -->
 <template>
   <div class="userInfoContent">
@@ -48,17 +48,18 @@
               <el-radio :label="0"
                         v-model="info.sex">女</el-radio>
             </el-form-item>
-            <el-form-item label="年级"
-                          v-if="info.type == 2">
+            <el-form-item label="年级">
               <el-date-picker type="year"
                               v-model="info.greade"
                               placeholder="年级"
                               @change="dateChange" />
             </el-form-item>
-            <el-form-item label="班级"
-                          v-if="info.type == 2">
-              <el-select v-model="info.class"
-                         placeholder="Select">
+            <el-form-item label="班级">
+              <el-select v-model="info.classes"
+                         placeholder="Select"
+                         :multiple="info.type == 3"
+                         clearable
+                         collapse-tags>
                 <el-option v-for="item in classList"
                            :key="item.c_id"
                            :label="item.classname"
@@ -66,21 +67,22 @@
               </el-select>
             </el-form-item>
             <el-form-item label="类型">
-              <el-radio v-model="info.type"
-                        :label="1"
-                        border
-                        :disabled='id'
-                        size="large">管理员</el-radio>
-              <el-radio v-model="info.type"
-                        :label="2"
-                        border
-                        :disabled='id'
-                        size="large">学生</el-radio>
-              <el-radio v-model="info.type"
-                        :label="3"
-                        border
-                        :disabled='id'
-                        size="large">教师</el-radio>
+              <el-radio-group v-model="info.type"
+                              @change="() => {info.classes = '';info.c_id=''}">
+                <el-radio :label="1"
+                          border
+                          :disabled='id'
+                          size="large">管理员</el-radio>
+                <el-radio :label="2"
+                          border
+                          :disabled='id'
+                          size="large">学生</el-radio>
+                <el-radio :label="3"
+                          border
+                          :disabled='id'
+                          size="large">教师</el-radio>
+              </el-radio-group>
+
             </el-form-item>
           </el-form>
           <el-button type="primary"
@@ -149,7 +151,8 @@ export default {
 				type: 2,
 				tell: '',
 				greade: '',
-				class: ''
+				classes: '',
+				c_id: ''
 			},
 			classList: []
 		});
@@ -189,13 +192,31 @@ export default {
 				return;
 			}
 			if (state.info.type == 2) {
-				if (!state.info.class) {
+				if (!state.info.classes) {
 					ElMessage.error({
 						message: '学生班级/年级不能为空'
 					});
 					return;
 				}
 			}
+			// 将c_id 查找出来
+			if (state.info.classes.length > 0) {
+				if (!Array.isArray(state.info.classes)) {
+					const item = state.classList.find(
+						(item: any) => item.classname == state.info.classes
+					) || { c_id: '' };
+					state.info.c_id = item.c_id;
+				}
+				state.info.c_id = state.classList
+					.filter((item: any) => state.info.classes.includes(item.classname) && item.c_id)
+					.map((item: any) => item.c_id)
+					.join(',');
+			}
+
+			state.info.classes = Array.isArray(state.info.classes)
+				? state.info.classes.join(',')
+				: state.info.classes;
+
 			// 先判断是注册还是修改
 			if (id) {
 				//如果存在说明为修改
@@ -283,6 +304,7 @@ export default {
 				return false;
 			}
 		};
+
 		// 获取班级列表
 		getClasses({});
 		return {

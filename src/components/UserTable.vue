@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-01 21:04:01
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-17 23:51:38
+ * @LastEditTime: 2022-05-01 21:37:24
 -->
 <template>
   <div>
@@ -26,7 +26,7 @@
       <el-button size="large"
                  class="upload-btn"
                  type="primary"
-                 @click="routerHop({name:'UserInfo',params:{id:'210104050423'}})">
+                 @click="routerHop({name:'UserInfo'})">
         <el-icon>
           <circle-plus-filled />
         </el-icon>添加
