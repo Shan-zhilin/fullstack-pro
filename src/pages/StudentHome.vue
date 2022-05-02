@@ -5,20 +5,19 @@
  * @LastEditTime: 2022-04-02 20:05:46
 -->
 <template>
-    <div>
-        <user-table type="2"/>
-    </div>
+  <div>
+    <user-table type="2" />
+  </div>
 </template>
 
 <script lang="ts">
-import usertable from '../components/UserTable.vue'
+import usertable from '../components/UserTable.vue';
 export default {
-    components:{
-        'user-table': usertable
-    },
-    setup(){}
-}
+	components: {
+		'user-table': usertable
+	},
+	setup() {}
+};
 </script>
 <style scoped>
-
 </style>
