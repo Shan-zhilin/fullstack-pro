@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-16 16:14:42
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-01 23:13:55
+ * @LastEditTime: 2022-05-02 23:01:33
 -->
 <template>
   <div class="userInfoContent">
@@ -14,7 +14,7 @@
                    :label-position="labelPosition"
                    :size="size">
             <el-form-item label="ID">
-              <el-input :disabled="!!id"
+              <el-input :disabled="isUpdate"
                         v-model="info.id" />
             </el-form-item>
             <el-form-item label="用户名">
@@ -27,7 +27,7 @@
                         show-password />
             </el-form-item>
             <el-form-item label="修改密码"
-                          v-show="id">
+                          v-show="isUpdate">
               <el-input type="password"
                         v-model="info.repassword"
                         placeholder="请输入密码"
@@ -50,8 +50,10 @@
             </el-form-item>
             <el-form-item label="年级">
               <el-date-picker type="year"
-                              v-model="info.greade"
+                              v-model="info.grade"
                               placeholder="年级"
+                              format="YYYY"
+                              value-format="YYYY"
                               @change="dateChange" />
             </el-form-item>
             <el-form-item label="班级">
@@ -71,15 +73,15 @@
                               @change="() => {info.classes = '';info.c_id=''}">
                 <el-radio :label="1"
                           border
-                          :disabled='id'
+                          :disabled='isUpdate'
                           size="large">管理员</el-radio>
                 <el-radio :label="2"
                           border
-                          :disabled='id'
+                          :disabled='isUpdate'
                           size="large">学生</el-radio>
                 <el-radio :label="3"
                           border
-                          :disabled='id'
+                          :disabled='isUpdate'
                           size="large">教师</el-radio>
               </el-radio-group>
 
@@ -119,28 +121,45 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { reactive, toRefs, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { UploadFilled } from '@element-plus/icons-vue';
-import { addUser, updateUserInfo } from '../api/user';
+import { addUser, updateUserInfo, getOneUserInfo, getUserDataByToken } from '../api/user';
 import { getClassList } from '../api/class';
 import { ElMessage } from 'element-plus';
 import type { UploadFile } from 'element-plus';
 
+interface Iprops {
+	id: string;
+	username: string;
+	password: string;
+	repassword: string;
+	head: string;
+	mailbox: string;
+	address: string;
+	sex: number;
+	type: number;
+	tell: string;
+	greade: string;
+	classes: string;
+	c_id: string;
+	[key: string]: any;
+}
 export default {
 	components: {
 		UploadFilled
 	},
+	props: {
+		isUpdate: Boolean
+	},
 	setup(props: any) {
 		const router = useRouter();
-		const route = useRoute();
-		const {
-			params: { id }
-		} = route;
+
+		const isUpdate = props.isUpdate;
 
 		const state = reactive({
 			info: {
-				id: id || '',
+				id: '',
 				username: '',
 				password: '',
 				repassword: '',
@@ -150,12 +169,35 @@ export default {
 				sex: 1,
 				type: 2,
 				tell: '',
-				greade: '',
+				grade: '',
 				classes: '',
 				c_id: ''
 			},
 			classList: []
 		});
+
+		// 如果是更新则获取用户信息
+		const getUserInfo = () => {
+			if (!isUpdate) return;
+			getUserDataByToken({
+				token: window.localStorage.getItem('token')
+			}).then((res: any) => {
+				if (res.success) {
+					const { id, type } = res.value;
+					getOneUserInfo({ id, type }).then((result: any) => {
+						if (result.success) {
+							// 这里这样写的原因是 不能直接进行 state.info[key]会有问题
+							const obj: any = state.info;
+							for (let key in obj) {
+								obj[key] = result.value[key];
+							}
+						}
+					});
+				} else {
+					ElMessage.error('用户信息解析失败');
+				}
+			});
+		};
 
 		// 获取班级列表
 		const getClasses = (args: any) => {
@@ -172,8 +214,9 @@ export default {
 
 		// 年级选项发生变化时重新请求对应的班级列表
 		const dateChange = () => {
-			const year = new Date(state.info.greade).getFullYear();
-			getClasses(year == 1970 ? {} : { queryInfo: JSON.stringify({ grade: year }) });
+			getClasses(
+				state.info.grade == '1970' ? {} : { queryInfo: JSON.stringify({ grade: state.info.grade }) }
+			)
 		};
 
 		// 提交
@@ -184,20 +227,13 @@ export default {
 				!state.info.password ||
 				!state.info.tell ||
 				!state.info.address ||
-				!state.info.mailbox
+				!state.info.mailbox ||
+				!state.info.classes
 			) {
 				ElMessage.error({
 					message: '所需基本信息不能为空'
 				});
 				return;
-			}
-			if (state.info.type == 2) {
-				if (!state.info.classes) {
-					ElMessage.error({
-						message: '学生班级/年级不能为空'
-					});
-					return;
-				}
 			}
 			// 将c_id 查找出来
 			if (state.info.classes.length > 0) {
@@ -218,15 +254,7 @@ export default {
 				: state.info.classes;
 
 			// 先判断是注册还是修改
-			if (id) {
-				//如果存在说明为修改
-				if (state.info.repassword) {
-					if (state.info.repassword == state.info.password) {
-						ElMessage.error({
-							message: '修改后的密码不能与原始密码相同'
-						});
-					}
-				}
+			if (isUpdate) {
 				const updateinfo = JSON.parse(JSON.stringify(state.info));
 				if (updateinfo.repassword) {
 					if (updateinfo.repassword == updateinfo.password) {
@@ -269,9 +297,9 @@ export default {
 		const uploadSucess = (res: any) => {
 			if (res.success) {
 				state.info.head = res.url;
-				if (id) {
+				if (state.info.id) {
 					const updateinfo = {
-						id,
+						id: state.info.id,
 						head: res.url,
 						type: state.info.type
 					};
@@ -305,11 +333,15 @@ export default {
 			}
 		};
 
+		// 如果是用户更新则需要获取用户信息
+		getUserInfo();
 		// 获取班级列表
 		getClasses({});
+
 		return {
 			router,
-			id,
+			// eslint-disable-next-line vue/no-dupe-keys
+			isUpdate,
 			dateChange,
 			confirmhandler,
 			uploadSucess,

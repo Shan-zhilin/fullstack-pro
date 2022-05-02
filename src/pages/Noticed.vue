@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-05 22:00:40
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-07 22:51:43
+ * @LastEditTime: 2022-05-02 16:18:28
 -->
 <template>
   <div class="noticeContent">
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, ref } from 'vue';
+import { reactive, toRefs } from 'vue';
 import { Search } from '@element-plus/icons-vue';
 import { getAllNotice, deleteNotice } from '../api/notice';
 import { ElMessage } from 'element-plus';

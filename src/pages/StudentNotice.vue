@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-28 19:42:38
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-29 21:33:53
+ * @LastEditTime: 2022-05-02 20:40:28
 -->
 <template>
   <div class="noticeContent">
@@ -112,7 +112,6 @@ export default {
 							});
 							state.tableData = res.value;
 							state.totalNum = res.total;
-                            console.log(state.totalNum)
 						}
 					});
 				} else {

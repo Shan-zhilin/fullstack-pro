@@ -2,15 +2,15 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 15:12:27
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-06 21:45:07
+ * @LastEditTime: 2022-05-02 20:47:53
 -->
 <template>
   <div class="content">
     <div class="form_content">
       <h2>校园疫情管理系统</h2>
       <el-input size="large"
-                placeholder="请输入姓名"
-                v-model="loginData.username" />
+                placeholder="请输入ID"
+                v-model="loginData.id" />
       <el-input size="large"
                 placeholder="请输入密码"
                 type="password"
@@ -44,7 +44,7 @@ export default {
 	setup(props: any) {
 		// 登录信息
 		const loginData = reactive({
-			username: '',
+			id: '',
 			password: '',
 			type: 1
 		});
@@ -53,7 +53,7 @@ export default {
 
 		// 登录方法
 		const login = () => {
-			if (!loginData.username || !loginData.password) {
+			if (!loginData.id || !loginData.password) {
 				ElMessage({
 					message: '用户名或密码不能为空',
 					type: 'error'
