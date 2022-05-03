@@ -2,11 +2,11 @@
  * @Author: shanzhilin
  * @Date: 2022-04-28 19:42:38
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-02 20:40:28
+ * @LastEditTime: 2022-05-03 23:49:56
 -->
 <template>
   <div class="noticeContent">
-	
+
     <el-card>
       <el-date-picker v-model="dateRange"
                       type="datetimerange"
@@ -68,7 +68,7 @@
 <script lang="ts">
 import { reactive, toRefs } from 'vue';
 import { Search } from '@element-plus/icons-vue';
-import { getAllNotice, getAllRead,readNotice } from '../api/notice';
+import { getAllNotice, getAllRead, readNotice } from '../api/notice';
 import { getUserDataByToken } from '../api/user';
 import { ElMessage } from 'element-plus';
 export default {
@@ -87,37 +87,34 @@ export default {
 		});
 
 		/* 搜索or初始化 函数 */
-		const search = () => {
+		const search = async () => {
 			//强转一下，datapicker点击清楚icon 会将数据改成 null
 			state.dateRange = Array.isArray(state.dateRange) ? state.dateRange : [];
-			getAllNotice({
+			const res: any = await getAllNotice({
 				title: state.title,
 				currPage: state.currentPage,
 				pageNum: state.pageSize,
 				startTime: state.dateRange[0] ? state.dateRange[0] : '',
 				endTime: state.dateRange[1] ? state.dateRange[1] : '',
 				classes: state.userinfo.class
-			}).then((res: any) => {
-				if (res.success) {
-					getAllRead({ u_id: state.userinfo.id }).then((result: any) => {
-						if (result.success) {
-							res.value.forEach((item: any) => {
-								result.value.forEach((item2: any) => {
-									if (item.n_id == item2.n_id) {
-										item.status = 1;
-									} else {
-										item.status = 0;
-									}
-								});
-							});
-							state.tableData = res.value;
-							state.totalNum = res.total;
-						}
-					});
-				} else {
-					ElMessage.error(res.message);
-				}
 			});
+			if (res.success) {
+				const result: any = await getAllRead({ u_id: state.userinfo.id });
+				if (result.success) {
+					res.value.forEach((item: any) => {
+						item.status = 0;
+						result.value.forEach((item2: any) => {
+							if (item.n_id == item2.n_id) {
+								item.status = 1;
+							}
+						});
+					});
+					state.tableData = res.value;
+					state.totalNum = res.total;
+				}
+			} else {
+				ElMessage.error(res.message);
+			}
 		};
 
 		/* 根据token获取用户id */
@@ -146,10 +143,9 @@ export default {
 		};
 
 		/* 阅读通知 */
-		const readnotice =(n_id:string) => {
-			console.log(n_id,state.userinfo.id)
+		const readnotice = (n_id: string) => {
 			readNotice({
-				n_id:n_id,
+				n_id: n_id,
 				u_id: state.userinfo.id
 			}).then((res: any) => {
 				if (res.success) {
