@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-16 16:14:42
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-02 23:01:33
+ * @LastEditTime: 2022-05-03 21:12:09
 -->
 <template>
   <div class="userInfoContent">
@@ -191,6 +191,9 @@ export default {
 							for (let key in obj) {
 								obj[key] = result.value[key];
 							}
+							if (state.info.type == 3) {
+								state.info.classes = result.value.classes.split(',');
+							}
 						}
 					});
 				} else {
@@ -216,7 +219,7 @@ export default {
 		const dateChange = () => {
 			getClasses(
 				state.info.grade == '1970' ? {} : { queryInfo: JSON.stringify({ grade: state.info.grade }) }
-			)
+			);
 		};
 
 		// 提交
@@ -271,6 +274,7 @@ export default {
 						ElMessage.success({
 							message: '修改成功'
 						});
+						getUserInfo()
 					} else {
 						ElMessage.error({
 							message: '修改失败'

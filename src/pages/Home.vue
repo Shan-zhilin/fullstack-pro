@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-29 16:43:26
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-28 20:17:11
+ * @LastEditTime: 2022-05-03 21:00:49
 -->
 <template>
   <div class="content">
@@ -79,20 +79,22 @@
       </div>
 
       <div v-show="userInfo.type === 3">
-        <el-menu-item index="10">
+        <el-menu-item index="10"
+                      @click="routetHop({path:'/teacher/notice'})">
           <el-icon>
             <alarm-clock />
           </el-icon>
           <span>通知管理</span>
         </el-menu-item>
-        <el-menu-item index="11">
+        <el-menu-item index="11"
+                      @click="routetHop({path:'/teacher/leave'})">
           <el-icon>
             <chat-dot-square />
           </el-icon>
           <span>请假管理</span>
         </el-menu-item>
         <el-menu-item index="12"
-                      route="">
+					  @click="routetHop({path:'/teacher/info'})">
           <el-icon>
             <alarm-clock />
           </el-icon>

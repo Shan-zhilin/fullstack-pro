@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-03-26 14:44:43
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-04-28 20:15:09
+ * @LastEditTime: 2022-05-03 20:55:38
  */
 import { createRouter, createWebHashHistory } from 'vue-router';
 const login = () => import('../pages/Login.vue');
@@ -17,7 +17,8 @@ const studentNotice = () => import('@/pages/StudentNotice.vue');
 const studetLeave = () => import('@/pages/StudentLeave.vue');
 const studentHealthy = () => import('@/pages/StudentHealthy.vue');
 const studentInfo = () => import('@/pages/StudentInfo.vue');
-
+const teacherLeave = () => import('@/pages/TeacherLeave.vue');
+const teacherNotice = () => import('@/pages/TeacherNotice.vue');
 
 const routes = [
 	{ path: '/', redirect: '/home' },
@@ -25,7 +26,7 @@ const routes = [
 	{
 		path: '/home',
 		component: home,
-        redirect: '/home/board', //默认重定向到/home/board
+		redirect: '/home/board', //默认重定向到/home/board
 		children: [
 			{ path: '/home/board', component: board },
 			{ path: '/student/home', component: studentHome },
@@ -36,7 +37,10 @@ const routes = [
 			{ path: '/teacher/home', component: teacherHome },
 			{ path: '/notice', component: noticedHome },
 			{ path: '/classes', component: classHome },
-			{ path: '/userinfo',name: 'UserInfo', component: userInfo },
+			{ path: '/userinfo', name: 'UserInfo', component: userInfo },
+			{ path: '/teacher/info', name: 'TeacherInfo', component: studentInfo },
+			{ path: '/teacher/leave', component: teacherLeave },
+			{ path: '/teacher/notice', component: teacherNotice },
 		]
 	}
 ];
