@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-16 16:14:42
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-03 21:12:09
+ * @LastEditTime: 2022-05-04 22:36:13
 -->
 <template>
   <div class="userInfoContent">
@@ -97,7 +97,7 @@
           <h3>上传头像</h3>
           <el-upload class="upload-demo"
                      drag
-                     action="/api/upload"
+                     action="/api/upload/image"
                      :show-file-list="false"
                      :on-success="uploadSucess"
                      :before-upload="beforeUpload">
