@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-05 22:00:40
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-02 16:18:28
+ * @LastEditTime: 2022-05-05 16:41:12
 -->
 <template>
   <div class="noticeContent">
@@ -13,7 +13,8 @@
                       start-placeholder="起始时间"
                       end-placeholder="结束时间"
                       value-format="YYYY-MM-DD HH:mm:ss"
-                      size="large" />
+                      size="large"
+                      @change="search" />
       <el-input size="large"
                 v-model="title"
                 :prefix-icon="Search"
@@ -26,7 +27,8 @@
                  @click="reset">重置</el-button>
       <el-button size="large"
                  class="makeNotice"
-                 type="primary">发布新通知
+                 type="primary"
+                 @click="routerHop('/teacher/notice')">发布新通知
       </el-button>
     </el-card>
 
@@ -76,6 +78,7 @@
 
 <script lang="ts">
 import { reactive, toRefs } from 'vue';
+import { useRouter } from 'vue-router';
 import { Search } from '@element-plus/icons-vue';
 import { getAllNotice, deleteNotice } from '../api/notice';
 import { ElMessage } from 'element-plus';
@@ -89,6 +92,11 @@ export default {
 			pageSize: 10,
 			currentPage: 1
 		});
+		const router = useRouter();
+
+		const routerHop = (path: string) => {
+			router.push(path);
+		};
 
 		/* 搜索函数 */
 		const search = () => {
@@ -99,7 +107,7 @@ export default {
 				currPage: state.currentPage,
 				pageNum: state.pageSize,
 				startTime: state.dateRange[0] ? state.dateRange[0] : '',
-				endTime: state.dateRange[1] ? state.dateRange[1] : '',
+				endTime: state.dateRange[1] ? state.dateRange[1] : ''
 			}).then((res: any) => {
 				if (res.success) {
 					const { value, count } = res;
@@ -123,31 +131,32 @@ export default {
 			state.currentPage = 1;
 			search();
 		};
-    
-    /* 删除函数 */
-    const deleteUserOption = (id: number) => {
-      deleteNotice({
-        n_id: id
-      }).then((res: any) => {
-        if (res.success) {
-          ElMessage.success({
-            message: '删除成功'
-          });
-          search();
-        } else {
-          ElMessage.error({
-            message: res.message
-          });
-        }
-      });
-    };
+
+		/* 删除函数 */
+		const deleteUserOption = (id: number) => {
+			deleteNotice({
+				n_id: id
+			}).then((res: any) => {
+				if (res.success) {
+					ElMessage.success({
+						message: '删除成功'
+					});
+					search();
+				} else {
+					ElMessage.error({
+						message: res.message
+					});
+				}
+			});
+		};
 		search();
 		return {
 			...toRefs(state),
 			search,
 			reset,
 			Search,
-      deleteUserOption
+			routerHop,
+			deleteUserOption
 		};
 	}
 };

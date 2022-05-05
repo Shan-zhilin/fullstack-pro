@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-28 19:42:38
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-03 23:49:56
+ * @LastEditTime: 2022-05-05 16:46:40
 -->
 <template>
   <div class="noticeContent">
@@ -14,7 +14,8 @@
                       start-placeholder="起始时间"
                       end-placeholder="结束时间"
                       value-format="YYYY-MM-DD HH:mm:ss"
-                      size="large" />
+                      size="large"
+					  @change="search" />
       <el-input size="large"
                 v-model="title"
                 :prefix-icon="Search"

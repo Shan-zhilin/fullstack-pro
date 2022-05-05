@@ -27,6 +27,7 @@ declare module 'vue' {
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElUpload: typeof import('element-plus/es')['ElUpload']
+    ReleasrNotice: typeof import('./src/components/ReleasrNotice.vue')['default']
     UserInfo: typeof import('./src/components/UserInfo.vue')['default']
     UserTable: typeof import('./src/components/UserTable.vue')['default']
   }
