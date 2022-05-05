@@ -77,7 +77,9 @@ export default {
 		const state = reactive({
 			userinfo: {
 				id: '',
-				class: ''
+				class: '',
+				username: '',
+				head: ''
 			},
 			dateRange: [], //搜索时间范围
 			title: '',
@@ -147,7 +149,9 @@ export default {
 		const readnotice = (n_id: string) => {
 			readNotice({
 				n_id: n_id,
-				u_id: state.userinfo.id
+				u_id: state.userinfo.id,
+				username: state.userinfo.username,
+				head: state.userinfo.head
 			}).then((res: any) => {
 				if (res.success) {
 					ElMessage.success('阅读成功');

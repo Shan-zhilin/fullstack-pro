@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-06 22:25:30
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-05 15:41:31
+ * @LastEditTime: 2022-05-05 21:45:06
  */
 import request from '../util/request';
 
@@ -24,7 +24,7 @@ export async function deleteNotice(data:any) {
 // 获取阅读通知的人数
 export async function getAllRead(data:any) {
 	return await request('/notice/getReadNum', {
-		method: 'get',
+		method: 'post',
 		data
 	});
 }
@@ -32,7 +32,7 @@ export async function getAllRead(data:any) {
 // 阅读通知
 export async function readNotice(data:any) {
 	return await request('/notice/read', {
-		method: 'get',
+		method: 'post',
 		data
 	});
 }

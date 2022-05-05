@@ -2,7 +2,7 @@
  * @Author: shanzhilin
  * @Date: 2022-04-05 22:00:40
  * @LastEditors: shanzhilin
- * @LastEditTime: 2022-05-05 16:41:12
+ * @LastEditTime: 2022-05-05 21:44:04
 -->
 <template>
   <div class="noticeContent">
@@ -39,9 +39,17 @@
                     max-height="450"
                     :data="tableData">
             <el-table-column prop="title"
-                             label="标题" />
+                             label="标题"
+                             width="150" />
             <el-table-column prop="content"
-                             label="内容" />
+                             label="内容"
+                             width="100">
+              <template #default="scope">
+                <el-button type="text"
+                           @click="openDialog(scope.row.content)">查看内容</el-button>
+              </template>
+
+            </el-table-column>
             <el-table-column prop="createtime"
                              label="发布时间" />
             <el-table-column label="操作"
@@ -55,6 +63,8 @@
                     <el-button type="danger">删除</el-button>
                   </template>
                 </el-popconfirm>
+                <el-button type="primary"
+                           @click="searchReaderList(scope.row.n_id)">人数</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -69,10 +79,33 @@
       </el-col>
 
       <el-col :span="12">
-        <el-card> Never </el-card>
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <h3>通知阅读人数</h3>
+            </div>
+          </template>
+          <el-row :gutter="20"
+                  class="readerConter">
+            <el-col :span="6"
+                    v-for="(item) in readerList"
+                    :key="item.r_id">
+              <div class="rederItem">
+                <img :src="item.head || 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'">
+                <span>{{item.username}}</span>
+              </div>
+            </el-col>
+          </el-row>
+
+        </el-card>
       </el-col>
     </el-row>
-
+    <el-dialog v-model="showDialog"
+               title="通知内容"
+               width="30%"
+               @close="openDialog('')">
+      <p>{{dialogContent}}</p>
+    </el-dialog>
   </div>
 </template>
 
@@ -80,7 +113,7 @@
 import { reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { Search } from '@element-plus/icons-vue';
-import { getAllNotice, deleteNotice } from '../api/notice';
+import { getAllNotice, deleteNotice, getAllRead } from '../api/notice';
 import { ElMessage } from 'element-plus';
 export default {
 	setup() {
@@ -90,10 +123,14 @@ export default {
 			tableData: [],
 			totalNum: 0,
 			pageSize: 10,
-			currentPage: 1
+			currentPage: 1,
+			showDialog: false,
+			dialogContent: '',
+			readerList: [{ r_id: 0, username: '', head: '' }]
 		});
 		const router = useRouter();
 
+		// 路由跳转
 		const routerHop = (path: string) => {
 			router.push(path);
 		};
@@ -149,14 +186,38 @@ export default {
 				}
 			});
 		};
+
+		/* 打开查看详情弹框 */
+		const openDialog = (content: string) => {
+			state.showDialog = !state.showDialog;
+			state.dialogContent = content;
+		};
+
+		/* 查阅对应通知阅读人数 */
+		const searchReaderList = (n_id?: string) => {
+			getAllRead(n_id && { n_id }).then((res: any) => {
+				if (res.success) {
+					state.readerList = res.value;
+				} else {
+					ElMessage.error({
+						message: res.message
+					});
+				}
+			});
+		};
+		searchReaderList();
 		search();
+
 		return {
-			...toRefs(state),
+	
 			search,
 			reset,
 			Search,
 			routerHop,
-			deleteUserOption
+			deleteUserOption,
+			openDialog,
+			searchReaderList,
+		    ...toRefs(state),
 		};
 	}
 };
@@ -182,10 +243,40 @@ export default {
 			height: 100%;
 		}
 	}
+	.readerConter {
+		height: 400px;
+		overflow: auto;
+		.rederItem {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
+			height: 150px;
+			padding-top: 20px;
+			margin-right: 20px;
+			margin-bottom: 20px;
+			border: 1px solid rgb(218, 221, 228);
+			border-radius: 3px;
+
+			img {
+				width: 90px;
+				height: 90px;
+				object-fit: fill;
+				margin-bottom: 15px;
+			}
+			&:hover {
+				cursor: pointer;
+				border-color: #606266;
+			}
+		}
+	}
 	.el-pagination {
 		display: flex;
 		justify-content: center;
 		margin-top: 20px;
+	}
+	h3 {
+		margin: 0;
 	}
 }
 </style>
