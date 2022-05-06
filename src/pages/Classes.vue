@@ -72,7 +72,7 @@ import { reactive, toRefs, onMounted, ref } from 'vue';
 import { Search } from '@element-plus/icons-vue';
 import { getClassList, deleteClass } from '@/api/class';
 import { ElMessage } from 'element-plus/lib/components';
-import { Column, Pie } from '@antv/g2plot';
+import {  Pie } from '@antv/g2plot';
 
 interface DataProps {
 	c_id: number;

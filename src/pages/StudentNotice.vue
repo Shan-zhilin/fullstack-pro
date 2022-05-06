@@ -6,7 +6,6 @@
 -->
 <template>
   <div class="noticeContent">
-
     <el-card>
       <el-date-picker v-model="dateRange"
                       type="datetimerange"
